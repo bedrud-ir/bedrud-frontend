@@ -16,7 +16,6 @@
         Participant,
     } from "livekit-client";
     import { Track, RoomEvent } from "livekit-client";
-    import type { PageData } from "./$types";
     import * as Card from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
     import { Separator } from "$lib/components/ui/separator";
@@ -30,12 +29,14 @@
         LogOut,
         Loader2,
     } from "lucide-svelte";
+    import { joinRoomAPI } from "$lib/api";
 
-    let { data }: PageData = $props();
+    let meetingState = $state("INIT"); // INIT, CONNECTING, CONNECTED, DISCONNECTED, ERROR
+    let error = $state(null);
+    let unsubscribe: (() => void)[];
+
     let room: Room | undefined;
 
-    let isLoading = $state(true);
-    let error = $state(null);
     let audioEnabled = $state(true);
     let videoEnabled = $state(true);
     let meetingData = $state(null);
@@ -46,12 +47,6 @@
     // Remove track variables as we'll handle directly with elements
     let videoStream: MediaStream | null = null;
     let audioStream: MediaStream | null = null;
-
-    onMount(() => {
-        // Debug log to check the token
-        console.log("Meeting data:", data.meetingData);
-        console.log("Token available:", data.meetingData?.token);
-    });
 
     async function setupRoom() {
         try {
@@ -247,12 +242,25 @@
     }
 
     onMount(() => {
-        console.log(data);
+        // first we need to get the user's token. if no token => login
+        // then get the join token => join room
+        // then setup the room
+        // then connect to the room
+
+        unsubscribe.push(
+            userStore.subscribe((value) => {
+                if (room?.localParticipant) {
+                    room.localParticipant.identity = value.name;
+                }
+            }),
+        );
+        // Debug log to check the token
+        console.log("Meeting data:", data.meetingData);
+        console.log("Token available:", data.meetingData?.token);
     });
+
     onDestroy(() => {
-        if (room) {
-            room.disconnect();
-        }
+        if (room) room.disconnect();
     });
 </script>
 

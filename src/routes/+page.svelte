@@ -111,7 +111,7 @@
                     {/if}
                 </Button>
                 <Button variant="outline" href="/auth/login">Sign in</Button>
-                <Button href="/auth/register">Start Free</Button>
+                <Button href="/auth/register">Register</Button>
             </div>
         </div>
     {/if}

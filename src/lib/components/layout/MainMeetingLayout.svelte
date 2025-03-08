@@ -47,7 +47,7 @@
         <div class="flex items-center space-x-2">
             <button
                 class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                on:click={onSettings}
+                onclick={onSettings}
             >
                 <Settings class="h-5 w-5" />
             </button>
@@ -72,7 +72,7 @@
                         </h3>
                         <p class="mb-4">{connectionError}</p>
                         <button
-                            on:click={onRetry}
+                            onclick={onRetry}
                             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                         >
                             Retry Connection
@@ -102,7 +102,7 @@
             <div class="flex-1 flex justify-center space-x-2">
                 <button
                     class="p-3 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-                    on:click={onToggleMic}
+                    onclick={onToggleMic}
                 >
                     {#if micEnabled}
                         <Mic class="h-6 w-6" />
@@ -112,7 +112,7 @@
                 </button>
                 <button
                     class="p-3 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-                    on:click={onToggleCamera}
+                    onclick={onToggleCamera}
                 >
                     {#if cameraEnabled}
                         <Video class="h-6 w-6" />
@@ -122,7 +122,7 @@
                 </button>
                 <button
                     class="p-3 rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors"
-                    on:click={onLeave}
+                    onclick={onLeave}
                 >
                     <PhoneOff class="h-6 w-6" />
                 </button>
@@ -131,13 +131,13 @@
             <div class="flex-1 flex justify-end space-x-2">
                 <button
                     class="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-                    on:click={onChat}
+                    onclick={onChat}
                 >
                     <MessageSquare class="h-5 w-5" />
                 </button>
                 <button
                     class="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-                    on:click={onParticipants}
+                    onclick={onParticipants}
                 >
                     <Users class="h-5 w-5" />
                 </button>

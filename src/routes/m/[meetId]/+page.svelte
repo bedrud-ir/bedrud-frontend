@@ -243,6 +243,7 @@
 
     onMount(() => {
         // first we need to get the user's token. if no token => login
+        
         // then get the join token => join room
         // then setup the room
         // then connect to the room

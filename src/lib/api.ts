@@ -4,71 +4,71 @@ import { userStore } from './stores/user.store';
 export const baseURL = import.meta.env.VITE_BACKEND_API;
 
 interface LoginResponse {
-    tokens: {
-        accessToken: string;
-        refreshToken: string;
-    };
-    user: {
-        id: string;
-        email: string;
-        name: string;
-        pictureUrl?: string;
-        isAdmin?: boolean;
-    };
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    pictureUrl?: string;
+    isAdmin?: boolean;
+  };
 }
 
 interface RefreshTokenResponse {
-    access_token: string;
-    refresh_token: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 interface RoomSettings {
-    allowChat: boolean;
-    allowVideo: boolean;
-    allowAudio: boolean;
-    requireApproval: boolean;
+  allowChat: boolean;
+  allowVideo: boolean;
+  allowAudio: boolean;
+  requireApproval: boolean;
 }
 
 interface RoomParticipant {
-    id: string;
-    userId: string;
-    email: string;
-    name: string;
-    joinedAt: string;
-    isActive: boolean;
-    isMuted: boolean;
-    isVideoOff: boolean;
-    isChatBlocked: boolean;
-    permissions: string;
+  id: string;
+  userId: string;
+  email: string;
+  name: string;
+  joinedAt: string;
+  isActive: boolean;
+  isMuted: boolean;
+  isVideoOff: boolean;
+  isChatBlocked: boolean;
+  permissions: string;
 }
 
 export interface Room {
-    id: string;
-    name: string;
-    createdBy: string;
-    isActive: boolean;
-    maxParticipants: number;
-    expiresAt: string;
-    settings: RoomSettings;
-    participants: RoomParticipant[];
+  id: string;
+  name: string;
+  createdBy: string;
+  isActive: boolean;
+  maxParticipants: number;
+  expiresAt: string;
+  settings: RoomSettings;
+  participants: RoomParticipant[];
 }
 
 export interface AdminUser {
-    id: string;
-    email: string;
-    name: string;
-    provider: string;
-    isActive: boolean;
-    accesses: string[] | null;
-    createdAt: string;
+  id: string;
+  email: string;
+  name: string;
+  provider: string;
+  isActive: boolean;
+  accesses: string[] | null;
+  createdAt: string;
 }
 
 interface AdminUsersResponse {
-    users: AdminUser[];
+  users: AdminUser[];
 }
 
 interface UpdateUserStatusResponse {
-    message: string;
+  message: string;
 }
 
 export async function authFetch(url, options = {
@@ -93,7 +93,7 @@ export async function authFetch(url, options = {
     ...options,
     headers: {
       ...options?.headers,
-      "Authorization": `Bearer ${token?.accessToken??""}`
+      "Authorization": `Bearer ${token?.accessToken ?? ""}`
     }
   });
 
@@ -111,29 +111,29 @@ export async function authFetch(url, options = {
 
 // ----------------- Authentication API -----------------
 export function loginAPI(email: string, password: string): Promise<LoginResponse> {
-    return fetch(`${baseURL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-    }).then(res => {
-        if (!res.ok) throw new Error('Login failed');
-        return res.json();
-    });
+  return fetch(`${baseURL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  }).then(res => {
+    if (!res.ok) throw new Error('Login failed');
+    return res.json();
+  });
 }
 
 export function registerAPI(data: {
-    email: string;
-    password: string;
-    name: string;
+  email: string;
+  password: string;
+  name: string;
 }): Promise<LoginResponse> {
-    return fetch(`${baseURL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }).then(res => {
-        if (!res.ok) throw new Error('Registration failed');
-        return res.json();
-    });
+  return fetch(`${baseURL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(res => {
+    if (!res.ok) throw new Error('Registration failed');
+    return res.json();
+  });
 }
 
 export function oAuthLoginAPI(provider: 'google' | 'github' | 'twitter') {
@@ -144,14 +144,14 @@ export function oAuthLoginAPI(provider: 'google' | 'github' | 'twitter') {
 }
 
 export function authRefresh(refreshToken: string): Promise<RefreshTokenResponse> {
-    return fetch(`${baseURL}/auth/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh_token: refreshToken })
-    }).then(res => {
-        if (!res.ok) throw new Error('Token refresh failed');
-        return res.json();
-    });
+  return fetch(`${baseURL}/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token: refreshToken })
+  }).then(res => {
+    if (!res.ok) throw new Error('Token refresh failed');
+    return res.json();
+  });
 }
 
 // ----------------- Room Management API -----------------
@@ -166,25 +166,25 @@ export function createRoomAPI(data: {
   });
 }
 
-interface JoinRoomResponse {
-    id: string;
-    name: string;
-    token: string;
-    createdBy: string;
-    isActive: boolean;
-    maxParticipants: number;
-    expiresAt: string;
-    settings: RoomSettings;
+export interface JoinRoomResponse {
+  id: string;
+  name: string;
+  token: string;
+  createdBy: string;
+  isActive: boolean;
+  maxParticipants: number;
+  expiresAt: string;
+  settings: RoomSettings;
 }
 
 export function joinRoomAPI(data: {
-    roomName: string;  // Changed from roomId to roomName
+  roomName: string;  // Changed from roomId to roomName
 }): Promise<JoinRoomResponse> {
-    return authFetch(`${baseURL}/join-room`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
+  return authFetch(`${baseURL}/join-room`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
 }
 
 // ----------------- Admin Room Management API -----------------
@@ -205,26 +205,26 @@ export function generateRoomTokenAPI(roomId: string, data: {
 }
 
 export function getRoomsAPI() {
-    return authFetch(`${baseURL}/admin/rooms`);
+  return authFetch(`${baseURL}/admin/rooms`);
 }
 
 export function updateRoomAPI(roomId: string, data: Partial<Room>) {
-    return authFetch(`${baseURL}/admin/rooms/${roomId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
+  return authFetch(`${baseURL}/admin/rooms/${roomId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
 }
 
 // ----------------- Admin User Management API -----------------
 export function listUsersAPI() {
-    return authFetch<AdminUsersResponse>(`${baseURL}/admin/users`);
+  return authFetch<AdminUsersResponse>(`${baseURL}/admin/users`);
 }
 
 export function updateUserStatusAPI(userId: string, active: boolean) {
-    return authFetch<UpdateUserStatusResponse>(`${baseURL}/admin/users/${userId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ active })
-    });
+  return authFetch<UpdateUserStatusResponse>(`${baseURL}/admin/users/${userId}/status`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ active })
+  });
 }

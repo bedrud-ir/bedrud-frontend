@@ -92,12 +92,12 @@
                 </a>
                 <span class="text-muted-foreground/50">•</span>
                 <a
-                    href="https://opensource.org/licenses/MIT"
+                    href="https://www.gnu.org/licenses/gpl-3.0.txt"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="hover:text-primary transition-colors"
                 >
-                    MIT License
+                    GPLv3 License
                 </a>
             </div>
 

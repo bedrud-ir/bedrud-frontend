@@ -66,6 +66,36 @@
 
     const log = (m: string) => logs.push(`[room] ${m}`);
 
+    async function toggleMic() {
+        if (!room?.localParticipant) return;
+        
+        try {
+            if (micEnabled) {
+                await room.localParticipant.setMicrophoneEnabled(false);
+            } else {
+                await room.localParticipant.setMicrophoneEnabled(true);
+            }
+            micEnabled = !micEnabled;
+        } catch (error) {
+            console.error('Failed to toggle microphone:', error);
+        }
+    }
+
+    async function toggleCamera() {
+        if (!room?.localParticipant) return;
+        
+        try {
+            if (cameraEnabled) {
+                await room.localParticipant.setCameraEnabled(false);
+            } else {
+                await room.localParticipant.setCameraEnabled(true);
+            }
+            cameraEnabled = !cameraEnabled;
+        } catch (error) {
+            console.error('Failed to toggle camera:', error);
+        }
+    }
+
     onMount(async () => {
         // Check User
         if (!$userStore) {
@@ -260,8 +290,8 @@
     connecting={connecting}
     connectionError={connectionError}
     onToggleDarkMode={() => darkMode = !darkMode}
-    onToggleMic={() => micEnabled = !micEnabled}
-    onToggleCamera={() => cameraEnabled = !cameraEnabled}
+    onToggleMic={toggleMic}
+    onToggleCamera={toggleCamera}
     onLeave={() => goto('/')}
     onRetry={handleRetry}
     onSettings={() => {}}
@@ -273,6 +303,7 @@
         <!-- Local video -->
         <div
             class="local-video-container bg-gray-800 rounded-lg overflow-hidden relative"
+            class:opacity-50={!cameraEnabled}
         >
             <div
                 bind:this={localVideoContainer}
@@ -282,6 +313,20 @@
                 class="absolute bottom-2 left-2 text-white bg-black bg-opacity-50 px-2 py-1 rounded"
             >
                 You ({$userStore?.name || "Local"})
+            </div>
+            <div
+                class="absolute top-2 right-2 flex gap-2"
+            >
+                {#if !micEnabled}
+                    <div class="bg-red-500 p-1 rounded">
+                        <i class="fas fa-microphone-slash text-white"></i>
+                    </div>
+                {/if}
+                {#if !cameraEnabled}
+                    <div class="bg-red-500 p-1 rounded">
+                        <i class="fas fa-video-slash text-white"></i>
+                    </div>
+                {/if}
             </div>
         </div>
 

@@ -7,9 +7,9 @@
     import { login } from "$lib/auth";
     import { goto } from "$app/navigation";
     import { userStore } from "$lib/stores/user.store";
-    import { Mail, Lock, AlertCircle, Hand } from "lucide-svelte";
+    import { Mail, Lock, AlertCircle, Hand, CheckCircle } from "lucide-svelte";
     import { onMount } from "svelte";
-    import { fly, fade } from "svelte/transition";
+    import { fly, fade, scale } from "svelte/transition";
     import { spring } from "svelte/motion";
     
     let email = "";
@@ -19,6 +19,8 @@
     let isLoading = false;
     let wiggleAnimation = true;
     let animationComplete = false;
+    let showSuccessAnimation = false;
+
     let logoCoords = spring({ x: 50, y: 50, scale: 1.8 }, {
         stiffness: 0.1,
         damping: 0.6
@@ -47,16 +49,22 @@
 
         try {
             await login(email, password, remember);
-            const redirectPath = localStorage.getItem("redirect");
-            if (redirectPath) {
-                goto(localStorage.getItem("redirect") + "");
-                return;
-            }
-            goto("/admin");
+            
+            // Show success animation
+            showSuccessAnimation = true;
+            
+            // Wait for the animation to complete before redirecting
+            setTimeout(() => {
+                const redirectPath = localStorage.getItem("redirect");
+                if (redirectPath) {
+                    goto(redirectPath);
+                } else {
+                    goto("/admin");
+                }
+            }, 1200); // Show success for 1.2 seconds before redirecting
         } catch (e) {
             console.error(e);
             error = e.message || "Login failed. Please try again.";
-        } finally {
             isLoading = false;
         }
     }
@@ -89,6 +97,24 @@
             {/if}
         </div>
     </div>
+
+    <!-- Success Animation overlay -->
+    {#if showSuccessAnimation}
+        <div 
+            class="fixed inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center z-50"
+            in:fade={{ duration: 300 }}
+            out:fade={{ duration: 300 }}
+        >
+            <div 
+                class="success-animation"
+                in:scale={{ duration: 400, start: 0.5, opacity: 0 }}
+            >
+                <CheckCircle class="h-16 w-16 text-green-500" strokeWidth={3} />
+                <p class="text-lg font-medium mt-4">Login successful!</p>
+                <p class="text-muted-foreground text-sm">;) happy to see you again</p>
+            </div>
+        </div>
+    {/if}
 
     <!-- Login form - appears after animation -->
     {#if animationComplete}
@@ -158,9 +184,15 @@
                             <Button
                                 type="submit"
                                 class="w-full"
-                                disabled={isLoading}
+                                disabled={isLoading || showSuccessAnimation}
                             >
-                                {isLoading ? "Signing in..." : "Sign in"}
+                                {#if isLoading && !showSuccessAnimation}
+                                    Signing in...
+                                {:else if showSuccessAnimation}
+                                    Success!
+                                {:else}
+                                    Sign in
+                                {/if}
                             </Button>
                         </div>
                         
@@ -198,6 +230,16 @@
             </div>
         </div>
     {/if}
+    
+    <!-- Footer links -->
+    {#if animationComplete}
+        <div class="absolute bottom-4 right-4 flex space-x-4 text-xs text-muted-foreground">
+            <a href="/about" class="hover:text-primary hover:underline">About</a>
+            <a href="/terms" class="hover:text-primary hover:underline">Terms</a>
+            <a href="/privacy" class="hover:text-primary hover:underline">Privacy</a>
+            <a href="/contact" class="hover:text-primary hover:underline">Contact</a>
+        </div>
+    {/if}
 </div>
 
 <style>
@@ -230,5 +272,20 @@
     
     .text-sidebar-foreground {
         color: var(--sidebar-foreground, hsl(240 10% 3.9%));
+    }
+
+    .success-animation {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        animation: success-pulse 1.2s ease-in-out;
+    }
+    
+    @keyframes success-pulse {
+        0% { transform: scale(1); }
+        10% { transform: scale(1.05); }
+        20% { transform: scale(1); }
+        100% { transform: scale(1); }
     }
 </style>

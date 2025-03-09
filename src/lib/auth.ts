@@ -3,6 +3,16 @@ import { userStore } from './stores/user.store';
 import { authRefresh, loginAPI, registerAPI } from './api';
 import { jwtDecode } from 'jwt-decode';
 
+// Add this interface to define the JWT payload structure
+interface DecodedToken {
+  userId: string;
+  email: string;
+  accesses: string[];
+  provider: string;
+  exp: number;
+  iat: number;
+}
+
 export async function login(email: string, password: string, remember: boolean = false) {
     const response = await loginAPI(email, password);
     console.log(response)
@@ -15,13 +25,43 @@ export async function login(email: string, password: string, remember: boolean =
 }
 
 export async function register(email: string, password: string, name: string) {
-    const response = await registerAPI({ email, password, name });
-    if (response.tokens && response.user) {
-        authStore.setTokens(response.tokens);
-        userStore.set(response.user);
-        return response.user;
+    try {
+        const response = await registerAPI({ email, password, name });
+        console.log(response);
+        
+        if (response.access_token && response.refresh_token) {
+            // Convert snake_case response to camelCase for the auth store
+            const tokens = {
+                accessToken: response.access_token,
+                refreshToken: response.refresh_token
+            };
+            
+            // Set tokens in auth store
+            authStore.setTokens(tokens);
+            
+            // Decode JWT to get user info with proper typing
+            const decoded = jwtDecode<DecodedToken>(tokens.accessToken);
+            
+            // Create user object from decoded JWT
+            const user = {
+                id: decoded.userId,
+                email: decoded.email,
+                name: name,
+                pictureUrl: undefined,
+                isAdmin: decoded.accesses?.includes('admin')
+            };
+            
+            // Set user in user store
+            userStore.set(user);
+            
+            return user;
+        }
+        
+        throw new Error('Registration failed');
+    } catch (error) {
+        // Re-throw the error with the specific message from the API
+        throw error;
     }
-    throw new Error('Registration failed');
 }
 
 export async function logout() {

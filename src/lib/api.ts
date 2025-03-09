@@ -17,6 +17,11 @@ interface LoginResponse {
   };
 }
 
+interface RegisterResponse {
+  access_token: string;
+  refresh_token: string;
+}
+
 interface RefreshTokenResponse {
   access_token: string;
   refresh_token: string;
@@ -125,13 +130,17 @@ export function registerAPI(data: {
   email: string;
   password: string;
   name: string;
-}): Promise<LoginResponse> {
+}): Promise<RegisterResponse> {
   return fetch(`${baseURL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
-  }).then(res => {
-    if (!res.ok) throw new Error('Registration failed');
+  }).then(async res => {
+    if (!res.ok) {
+      // Parse the error response to get the specific error message
+      const errorData = await res.json();
+      throw new Error(errorData.error || 'Registration failed');
+    }
     return res.json();
   });
 }

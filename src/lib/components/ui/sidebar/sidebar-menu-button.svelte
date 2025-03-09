@@ -30,7 +30,6 @@
 <script lang="ts">
 	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 	import { cn } from "$lib/utils.js";
-	import { mergeProps, type WithElementRef, type WithoutChildrenOrChild } from "bits-ui";
 	import type { ComponentProps, Snippet } from "svelte";
 	import type { HTMLAttributes } from "svelte/elements";
 	import { useSidebar } from "./context.svelte.js";
@@ -46,12 +45,12 @@
 		tooltipContent,
 		tooltipContentProps,
 		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+	}: any & {
 		isActive?: boolean;
 		variant?: SidebarMenuButtonVariant;
 		size?: SidebarMenuButtonSize;
 		tooltipContent?: Snippet;
-		tooltipContentProps?: WithoutChildrenOrChild<ComponentProps<typeof Tooltip.Content>>;
+		tooltipContentProps?: any;
 		child?: Snippet<[{ props: Record<string, unknown> }]>;
 	} = $props();
 
@@ -67,11 +66,10 @@
 </script>
 
 {#snippet Button({ props }: { props?: Record<string, unknown> })}
-	{@const mergedProps = mergeProps(buttonProps, props)}
 	{#if child}
-		{@render child({ props: mergedProps })}
+		{@render child({ props })}
 	{:else}
-		<button bind:this={ref} {...mergedProps}>
+		<button bind:this={ref} {...props}>
 			{@render children?.()}
 		</button>
 	{/if}

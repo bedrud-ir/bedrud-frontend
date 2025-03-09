@@ -16,20 +16,16 @@
     } from "livekit-client";
     import MainMeetingLayout from "$lib/components/layout/MainMeetingLayout.svelte";
 
-    // Use environment variable or default to localhost for development
-    const LIVEKIT_URL =
-        import.meta.env.VITE_LIVEKIT_URL || "ws://localhost:7880";
-
-    async function connectToRoom(room: Room, token: string): Promise<void> {
+    async function connectToRoom(room: Room, token: string, livekitHost: string): Promise<void> {
         log("Connecting to room");
 
         try {
             // Pre-warm connection
-            await room.prepareConnection(LIVEKIT_URL, token);
+            await room.prepareConnection(livekitHost, token);
 
             log("Prepared connection");
             // Connect with auto-subscribe enabled
-            await room.connect(LIVEKIT_URL, token, {
+            await room.connect(livekitHost, token, {
                 autoSubscribe: true,
             });
 
@@ -118,8 +114,8 @@
             roomName: page.params.meetId,
         })) as JoinRoomResponse;
 
-        if (!joinRoomResp || !joinRoomResp.token) {
-            connectionError = "Failed to get room token";
+        if (!joinRoomResp || !joinRoomResp.token || !joinRoomResp.livekitHost) {
+            connectionError = "Failed to get room token or LiveKit host";
             connecting = false;
             return;
         }
@@ -140,7 +136,7 @@
 
         // Connect using the meeting data that contains the LiveKit token
         try {
-            await connectToRoom(room, joinRoomResp.token);
+            await connectToRoom(room, joinRoomResp.token, joinRoomResp.livekitHost);
         } catch (roomError) {
             console.error("Room connection error:", roomError);
             connectionError =

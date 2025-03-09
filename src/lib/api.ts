@@ -179,6 +179,7 @@ export interface JoinRoomResponse {
   id: string;
   name: string;
   token: string;
+  LiveKitHost: string;
   createdBy: string;
   isActive: boolean;
   maxParticipants: number;

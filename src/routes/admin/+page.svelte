@@ -17,22 +17,22 @@
             description: "Manage user accounts and permissions",
             icon: Users,
             color: "bg-blue-500",
-            href: "/admin/users"
+            href: "/admin/users",
         },
         {
             title: "Rooms",
             description: "View and manage active rooms",
             icon: Home,
             color: "bg-green-500",
-            href: "/admin/rooms"
+            href: "/admin/rooms",
         },
         {
             title: "Settings",
             description: "Configure system settings",
             icon: Settings,
             color: "bg-purple-500",
-            href: "/admin/settings"
-        }
+            href: "/admin/settings",
+        },
     ];
 
     $effect(() => {
@@ -43,6 +43,7 @@
         }
     });
 </script>
+
 <header class="flex h-16 shrink-0 items-center gap-2">
     <div class="flex items-center gap-2 px-4">
         <Sidebar.Trigger class="-ml-1" />
@@ -61,11 +62,13 @@
         {#each adminCards as card}
             <button
                 class="group relative rounded-lg border p-6 hover:bg-muted/50 transition-colors"
-                on:click={() => goto(card.href)}
+                onclick={() => goto(card.href)}
             >
                 <div class="flex items-center gap-4">
-                    <div class="flex size-12 shrink-0 items-center justify-center rounded-lg {card.color} text-white">
-                        <svelte:component this={card.icon} class="size-6" />
+                    <div
+                        class="flex size-12 shrink-0 items-center justify-center rounded-lg {card.color} text-white"
+                    >
+                        {@render card.icon()}
                     </div>
                     <div class="flex flex-col items-start gap-1 text-left">
                         <h3 class="font-semibold">{card.title}</h3>
@@ -85,19 +88,21 @@
             <div class="grid gap-4 md:grid-cols-2">
                 <div class="rounded-lg bg-muted/50 p-4">
                     <div class="text-2xl font-bold">-</div>
-                    <div class="text-sm text-muted-foreground">Active Users</div>
+                    <div class="text-sm text-muted-foreground">
+                        Active Users
+                    </div>
                 </div>
                 <div class="rounded-lg bg-muted/50 p-4">
                     <div class="text-2xl font-bold">-</div>
-                    <div class="text-sm text-muted-foreground">Active Rooms</div>
+                    <div class="text-sm text-muted-foreground">
+                        Active Rooms
+                    </div>
                 </div>
             </div>
         </div>
         <div class="rounded-lg border p-6">
             <h3 class="font-semibold mb-4">Recent Activity</h3>
-            <div class="text-sm text-muted-foreground">
-                No recent activity
-            </div>
+            <div class="text-sm text-muted-foreground">No recent activity</div>
         </div>
     </div>
 </div>

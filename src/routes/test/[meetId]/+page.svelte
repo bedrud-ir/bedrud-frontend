@@ -18,7 +18,7 @@
 
     // Use environment variable or default to localhost for development
     const LIVEKIT_URL =
-        import.meta.env.VITE_LIVEKIT_URL || "ws://192.168.1.8:7880";
+        import.meta.env.VITE_LIVEKIT_URL || "ws://localhost:7880";
 
     async function connectToRoom(room: Room, token: string): Promise<void> {
         log("Connecting to room");
